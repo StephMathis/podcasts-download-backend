@@ -24,6 +24,7 @@ class UserResource(Resource):
         resource_name = 'users'
 
     def obj_get_list(self, bundle, **kwargs):
+
         return [
             User(id=u("123456"), first_name=u("Foo"))
         ]
