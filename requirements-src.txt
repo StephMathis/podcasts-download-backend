@@ -1,0 +1,6 @@
+Django
+django-tastypie
+gevent
+pysynthetic
+python-mimeparse
+six
