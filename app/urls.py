@@ -16,9 +16,12 @@ Including another URLconf
 
 from django.conf.urls import include, url
 from tastypie.api import Api
-from app.api.user_resource import UserResource
+
+from .api.user_resource import UserResource
+from .api.wish.wish_resource import WishResource
 
 v1_api = Api(api_name='v1')
+v1_api.register(WishResource())
 v1_api.register(UserResource())
 
 urlpatterns = [

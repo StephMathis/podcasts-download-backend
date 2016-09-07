@@ -13,8 +13,6 @@ from .mixins.model_mixin import ModelMixin
 
 @synthesize_constructor()
 @synthesize_property('id', contract='string|None')
-@synthesize_property('first_name', contract='string|None')
-@synthesize_property('last_name', contract='string|None')
-class User(ModelMixin):
+@synthesize_property('title', contract='string|None')
+class Wish(ModelMixin):
     pass
-
