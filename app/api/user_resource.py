@@ -5,19 +5,17 @@
 # $Id: $
 #
 
-from django.conf.urls import url
-from six import u
 from tastypie import fields
 from tastypie.exceptions import ImmediateHttpResponse
 from tastypie.http import HttpNotFound
 from tastypie.resources import Resource
-from tastypie.utils import trailing_slash
 
-from app.lib.resources.url_helper import UrlHelper
-from ..lib.wish_store import WishStore
-from ..lib.user_store import UserStore
-from ..lib.resources.default_meta_mixin import DefaultMetaMixin
 from .wish.wish_resource import WishResource
+from ..lib.resources.default_meta_mixin import DefaultMetaMixin
+from ..lib.resources.url_helper import UrlHelper
+from ..lib.user_store import UserStore
+from ..lib.wish_store import WishStore
+from ..models.user import User
 
 
 class UserResource(Resource):
@@ -36,9 +34,15 @@ class UserResource(Resource):
 
         resource_name = 'users'
 
+    def obj_create(self, bundle, **kwargs):
+
+        bundle.obj = UserStore().create_user(User(**bundle.data))
+
+        return bundle
+
     def obj_get(self, bundle, **kwargs):
 
-        user = UserStore().get_user(user_id=kwargs.get('id'))
+        user = UserStore().find_user(user_id=kwargs.get('id'))
 
         if user is None:
             raise ImmediateHttpResponse(response=HttpNotFound())
