@@ -1,4 +1,5 @@
 Django
+bson
 django-tastypie
 gevent
 pysynthetic

@@ -5,6 +5,9 @@
 # $Id: $
 #
 
+import copy
+
+from bson import ObjectId
 from contracts import contract, new_contract
 from six import u
 
@@ -16,7 +19,7 @@ new_contract('User', User)
 class UserStore(object):
 
     _user_list = [
-        User(id=u("123456"), first_name=u("Foo"))
+        User(id=str(ObjectId()), first_name=u("Foo"))
     ]
 
     @contract
@@ -25,7 +28,9 @@ class UserStore(object):
         :type user: User
         :return: the created user (id from data source + canonicalization...)
         """
-        self._user_list.push(user)
+        user = copy.copy(user)
+        user.id = str(ObjectId())
+        self._user_list.append(user)
         return user
 
     @contract

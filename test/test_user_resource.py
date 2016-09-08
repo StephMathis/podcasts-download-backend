@@ -14,6 +14,7 @@ from .lib.test_case import WtTestCase
 
 
 class TestUserResource(WtTestCase):
+
     @patch.object(UserStore, 'user_list')
     def test_should_get_user_list(self, mock_user_list):
         mock_user_list.return_value = [
@@ -68,3 +69,38 @@ class TestUserResource(WtTestCase):
                 }
             ]
         }, data)
+
+    def test_should_add_user(self):
+
+        user_store = UserStore()
+
+        response = self.api_client.post(
+            uri='/api/v1/users/',
+            data={
+                'firstName': u("Foo")
+            }
+        )
+
+        self.assertHttpCreated(response)
+
+        data = self.deserialize(response)
+
+        self.assertEqual(2, len(user_store.user_list()))
+
+        user_id = user_store.user_list()[1].id
+
+        self.assertEqual({
+            u'firstName': u'Foo',
+            u'id': user_id,
+            u'lastName': None,
+            u'resourceUri': u'/api/v1/users/{}/'.format(user_id),
+            u'wishes': [
+                {
+                    u'id': u'WISH123456',
+                    u'resourceUri': u'/api/v1/wishes/WISH123456/',
+                    u'title': u'Test'
+                }
+            ]
+        }, data)
+
+
