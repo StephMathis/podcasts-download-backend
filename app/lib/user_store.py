@@ -18,9 +18,7 @@ new_contract('User', User)
 
 class UserStore(object):
 
-    _user_list = [
-        User(id=str(ObjectId()), first_name=u("Foo"))
-    ]
+    _user_list = []
 
     @contract
     def create_user(self, user):
@@ -46,6 +44,18 @@ class UserStore(object):
         else:
             return None
 
+    def remove_user(self, user_id):
+
+        user = self.find_user(user_id=user_id)
+
+        if user is not None:
+            self._user_list.remove(user)
+            return True
+        else:
+            return False
+
     def user_list(self):
         return self._user_list
 
+    def reset(self):
+        UserStore._user_list = []

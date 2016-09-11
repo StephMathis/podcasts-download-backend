@@ -15,6 +15,14 @@ from .lib.test_case import WtTestCase
 
 class TestUserResource(WtTestCase):
 
+    def setUp(self):
+        super(TestUserResource, self).setUp()
+        self._reset()
+
+    def tearDown(self):
+        super(TestUserResource, self).tearDown()
+        self._reset()
+
     @patch.object(UserStore, 'user_list')
     def test_should_get_user_list(self, mock_user_list):
         mock_user_list.return_value = [
@@ -85,9 +93,9 @@ class TestUserResource(WtTestCase):
 
         data = self.deserialize(response)
 
-        self.assertEqual(2, len(user_store.user_list()))
+        self.assertEqual(1, len(user_store.user_list()))
 
-        user_id = user_store.user_list()[1].id
+        user_id = user_store.user_list()[0].id
 
         self.assertEqual({
             u'firstName': u'Foo',
@@ -103,4 +111,20 @@ class TestUserResource(WtTestCase):
             ]
         }, data)
 
+    def test_should_delete_user(self):
 
+        user_store = UserStore()
+
+        foo = user_store.create_user(user=User(first_name=u("Foo")))
+        user_store.create_user(user=User(first_name=u("John")))
+
+        response = self.api_client.delete(uri='/api/v1/users/{}/'.format(foo.id))
+
+        self.assertHttpAccepted(response)
+
+        self.assertEqual(1, len(user_store.user_list()))
+        self.assertEqual(u("John"), user_store.user_list()[0].first_name)
+
+    def _reset(self):
+
+        UserStore().reset()

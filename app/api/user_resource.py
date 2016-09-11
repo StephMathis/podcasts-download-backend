@@ -40,6 +40,13 @@ class UserResource(Resource):
 
         return bundle
 
+    def obj_delete(self, bundle, **kwargs):
+
+        if not UserStore().remove_user(user_id=kwargs.get('id')):
+            raise ImmediateHttpResponse(response=HttpNotFound())
+
+        return None
+
     def obj_get(self, bundle, **kwargs):
 
         user = UserStore().find_user(user_id=kwargs.get('id'))
