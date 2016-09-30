@@ -1,3 +1,4 @@
+cachetools==1.1.6
 decorator==4.0.10
 Django==1.10.1
 django-tastypie==0.13.3
@@ -9,6 +10,7 @@ greenlet==0.4.10
 linecache2==1.0.0
 mock==2.0.0
 pbr==1.10.0
+podcastparser==0.6.0
 PyContracts==1.7.9
 pymongo==3.3.0
 pyparsing==2.1.8

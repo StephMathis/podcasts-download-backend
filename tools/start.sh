@@ -1,2 +1,2 @@
 . tools/export_env.sh local
-./manage.py runserver
+python3 ./manage.py runserver

@@ -18,10 +18,12 @@ from django.conf.urls import include, url
 from tastypie.api import Api
 
 from .api.user_resource import UserResource
-from .api.wish.wish_resource import WishResource
+from .api.podcast_resource import PodcastResource
+from .api.podcast_item_resource import PodcastItemResource
 
 v1_api = Api(api_name='v1')
-v1_api.register(WishResource())
+v1_api.register(PodcastResource())
+v1_api.register(PodcastItemResource())
 v1_api.register(UserResource())
 
 urlpatterns = [
