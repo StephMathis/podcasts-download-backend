@@ -19,11 +19,11 @@ from tastypie.api import Api
 
 from .api.user_resource import UserResource
 from .api.podcast_resource import PodcastResource
-from .api.podcast_item_resource import PodcastItemResource
+from .api.episode_resource import EpisodeResource
 
 v1_api = Api(api_name='v1')
 v1_api.register(PodcastResource())
-v1_api.register(PodcastItemResource())
+v1_api.register(EpisodeResource())
 v1_api.register(UserResource())
 
 urlpatterns = [

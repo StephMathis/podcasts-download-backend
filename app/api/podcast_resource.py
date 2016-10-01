@@ -22,7 +22,7 @@ from ..lib.resources.default_meta_mixin import DefaultMetaMixin
 from ..lib.resources.url_helper import UrlHelper
 from ..models.podcast import Podcast
 
-from .podcast_item_resource import PodcastItemResource
+from .episode_resource import EpisodeResource
 
 # http://localhost:8000/api/v1/podcasts/?url=aHR0cDovL2FwaS5ldXJvcGUxLmZyL3BvZGNhc3QvbXAzL2l0dW5lcy00MjM1MzQ4MDYvMjg1MDgxMS9wb2RjYXN0Lm1wMyZmaWxlbmFtZT1BQ0RIXy1fTCdpbnTDqWdyYWxlXzE5LzA5LzIwMTZfLV9MJ8OpdmFzaW9uX2QnSGVucmlfTWFzZXJzX2RlX0xhdHVkZS5tcDM=
 # http://localhost:8000/api/v1/podcasts/?url=aHR0cDovL21lZGlhLnJhZGlvZnJhbmNlLXBvZGNhc3QubmV0L3BvZGNhc3QwOS8xODk5Ni0xOC4wOS4yMDE2LUlURU1BXzIxMDc5NDc0LTAubXAz
@@ -34,6 +34,12 @@ class PodcastResource(Resource):
     #theurl = fields.CharField(attribute='url', default=None)
     podcast_url = fields.CharField(attribute='url', default=None)
     content = fields.CharField(attribute='content', default=None)
+    episodes = fields.ToManyField(
+        to=EpisodeResource,
+        attribute=lambda bundle: Podcast(bundle.obj.id).get_episodes(),
+        full=True,
+        readonly=True
+    )
 
     class Meta :
         resource_name = 'podcasts'
@@ -51,3 +57,22 @@ class PodcastResource(Resource):
         p1 = Podcast("p1")
         p1.setUrl(theurl)
         return [p1,Podcast("salut le podcast 2")]
+
+    def prepend_urls(self):
+        return [
+            UrlHelper().resource_url(
+                rest_url='podcasts/:podcast_id/episodes',
+                child_resource=EpisodeResource(),
+                dispatch='dispatch_list'
+            ),
+            UrlHelper().resource_url(
+                rest_url='podcasts/:podcast_id/episodes/:episode_id',
+                child_resource=EpisodeResource(),
+                dispatch='dispatch_detail'
+            ),
+            UrlHelper().resource_url(
+                rest_url='podcasts/:podcast_id/episodes/:episode_id/content',
+                child_resource=EpisodeResource(),
+                dispatch='get_mp3'
+            )
+        ]

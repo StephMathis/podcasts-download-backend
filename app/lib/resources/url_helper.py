@@ -8,17 +8,16 @@
 import re
 
 from django.conf.urls import url
-from six import u
 from tastypie.utils import trailing_slash
 
 
 class UrlHelper(object):
 
-    def resource_url(self, rest_url, child_resource):
+    def resource_url(self, rest_url, child_resource, dispatch):
 
         return url(
             regex=self._rest_url_to_regex(rest_url=rest_url),
-            view=child_resource.wrap_view('dispatch_list'),
+            view=child_resource.wrap_view(dispatch),
             name=self._rest_url_to_name(rest_url=rest_url)
         )
 
@@ -57,7 +56,7 @@ class UrlHelper(object):
 
             # Resource id replacement.
             if self._is_rest_id_split(split=split):
-                regex_url += r"(?P<{resource_id_name}>\w[\w/-]*)".format(resource_id_name=split[1:])
+                regex_url += r"(?P<{resource_id_name}>\w[\w-]*)".format(resource_id_name=split[1:])
 
             # Resource name replacement.
             else:

@@ -65,6 +65,7 @@ class UserResource(Resource):
         return [
             UrlHelper().resource_url(
                 rest_url='users/:user_id/wishes',
-                child_resource=WishResource()
+                child_resource=WishResource(),
+                dispatch='dispatch_list'
             )
         ]
