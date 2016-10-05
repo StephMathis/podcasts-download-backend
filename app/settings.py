@@ -35,12 +35,14 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'gunicorn',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -104,3 +106,8 @@ STATIC_URL = '/static/'
 
 TASTYPIE_FULL_DEBUG = DEBUG
 TASTYPIE_DEFAULT_FORMATS = ['json']
+
+
+# cors
+CORS_ORIGIN_ALLOW_ALL = True
+

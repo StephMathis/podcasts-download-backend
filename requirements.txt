@@ -2,6 +2,7 @@ cachetools==1.1.6
 decorator==4.0.10
 Django==1.10.1
 django-tastypie==0.13.3
+django-cors-headers==1.2.2
 extras==1.0.0
 fixtures==3.0.0
 funcsigs==1.0.2

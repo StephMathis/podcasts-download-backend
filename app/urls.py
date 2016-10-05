@@ -28,5 +28,5 @@ v1_api.register(UserResource())
 
 urlpatterns = [
     # The normal jazz here...
-    url(r'^api/', include(v1_api.urls)),
+    url(r'^podcast-api/', include(v1_api.urls)),
 ]
