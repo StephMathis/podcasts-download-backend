@@ -52,12 +52,9 @@ class PodcastResource(Resource):
 
         
     def obj_get_list(self, bundle, **kwargs):
-        res = []
-        for podcast_id in ["aHR0cDovL3JhZGlvZnJhbmNlLXBvZGNhc3QubmV0L3BvZGNhc3QwOS9yc3NfMTU2NDQueG1s","aHR0cDovL3JhZGlvZnJhbmNlLXBvZGNhc3QubmV0L3BvZGNhc3QwOS9yc3NfMTg5OTYueG1s"] :
-            podcast = Podcast(podcast_id)
-            podcast.get_content()
-            res.append(podcast)
-        return res
+        podcast = Podcast("aHR0cDovL3JhZGlvZnJhbmNlLXBvZGNhc3QubmV0L3BvZGNhc3QwOS9yc3NfMTg5OTYueG1s")
+        podcast.get_content()
+        return [podcast]
 
     def prepend_urls(self):
         return [
