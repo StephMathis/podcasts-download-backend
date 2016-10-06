@@ -9,6 +9,7 @@ import base64
 from cachetools import LRUCache
 import podcastparser
 import io
+import json
 
 from synthetic import synthesize_constructor
 from synthetic import synthesize_property
@@ -31,7 +32,7 @@ global_cache = LRUCache(maxsize=50, missing=get_podcast_parsed_content)
 
 
 @synthesize_property('id', contract='string|None')
-#@synthesize_property('content', contract='string|None')
+#@synthesize_property('content', contract='dict|None')
 class Podcast(ModelMixin):
     def __init__(self, id) :
         self.id = id
@@ -40,7 +41,7 @@ class Podcast(ModelMixin):
         super()
 
     def get_content(self) :
-        self.content = "%s" % global_cache[self.id]
+        self.content = global_cache[self.id]
     
     def get_episode_dict(self, guid) :
         """
