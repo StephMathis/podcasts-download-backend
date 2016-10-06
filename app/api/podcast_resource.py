@@ -33,7 +33,7 @@ class PodcastResource(Resource):
 
     #theurl = fields.CharField(attribute='url', default=None)
     podcast_url = fields.CharField(attribute='url', default=None)
-    content = fields.CharField(attribute='content', default=None)
+    content = fields.DictField(attribute='content', default=None)
     episodes = fields.ToManyField(
         to=EpisodeResource,
         attribute=lambda bundle: Podcast(bundle.obj.id).get_episodes(),
@@ -52,9 +52,13 @@ class PodcastResource(Resource):
 
         
     def obj_get_list(self, bundle, **kwargs):
-        podcast = Podcast("aHR0cDovL3JhZGlvZnJhbmNlLXBvZGNhc3QubmV0L3BvZGNhc3QwOS9yc3NfMTg5OTYueG1s")
-        podcast.get_content()
-        return [podcast]
+        res = []
+        for podcast_id in ["aHR0cDovL3JhZGlvZnJhbmNlLXBvZGNhc3QubmV0L3BvZGNhc3QwOS9yc3NfMTU2NDQueG1s","aHR0cDovL3JhZGlvZnJhbmNlLXBvZGNhc3QubmV0L3BvZGNhc3QwOS9yc3NfMTg5OTYueG1s"] :
+            podcast = Podcast(podcast_id)
+            podcast.get_content()
+            res.append(podcast)
+        return res
+
 
     def prepend_urls(self):
         return [
