@@ -52,11 +52,9 @@ class PodcastResource(Resource):
 
         
     def obj_get_list(self, bundle, **kwargs):
-        theurl = base64.urlsafe_b64decode(bundle.request.GET['url']).decode("utf-8") 
-        print("toto", bundle.request.GET['url'], theurl)
-        p1 = Podcast("p1")
-        p1.setUrl(theurl)
-        return [p1,Podcast("salut le podcast 2")]
+        podcast = Podcast("aHR0cDovL3JhZGlvZnJhbmNlLXBvZGNhc3QubmV0L3BvZGNhc3QwOS9yc3NfMTg5OTYueG1s")
+        podcast.get_content()
+        return [podcast]
 
     def prepend_urls(self):
         return [

@@ -17,8 +17,11 @@ from .mixins.model_mixin import ModelMixin
 
 from .episode import Episode
 
+def get_url(urlb64encoded) :
+    return base64.urlsafe_b64decode(urlb64encoded).decode("utf-8")
+
 def get_podcast_parsed_content(urlb64encoded) :
-    url = base64.urlsafe_b64decode(urlb64encoded).decode("utf-8")
+    url = get_url(urlb64encoded)
     #r = requests.get(url,stream=True)
     #return podcastparser.parse(url, r.raw)
     filelike = io.StringIO(requests.get(url).content.decode("utf-8"))
@@ -32,6 +35,7 @@ global_cache = LRUCache(maxsize=50, missing=get_podcast_parsed_content)
 class Podcast(ModelMixin):
     def __init__(self, id) :
         self.id = id
+        self.url = get_url(self.id)
         self.content = global_cache[self.id]
         super()
 
