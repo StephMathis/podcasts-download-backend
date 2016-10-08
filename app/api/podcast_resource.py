@@ -33,6 +33,7 @@ class PodcastResource(Resource):
 
     #theurl = fields.CharField(attribute='url', default=None)
     podcast_url = fields.CharField(attribute='url', default=None)
+    podcast_id = fields.CharField(attribute='id', default=None)
     content = fields.DictField(attribute='content', default=None)
     episodes = fields.ToManyField(
         to=EpisodeResource,
@@ -43,6 +44,7 @@ class PodcastResource(Resource):
 
     class Meta :
         resource_name = 'podcasts'
+        include_resource_uri = False
 
     def obj_get(self, bundle, **kwargs):
         pod_id = kwargs.get('pk')
