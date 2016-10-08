@@ -55,7 +55,19 @@ class PodcastResource(Resource):
         
     def obj_get_list(self, bundle, **kwargs):
         res = []
-        for podcast_id in ["aHR0cDovL3JhZGlvZnJhbmNlLXBvZGNhc3QubmV0L3BvZGNhc3QwOS9yc3NfMTU2NDQueG1s","aHR0cDovL3JhZGlvZnJhbmNlLXBvZGNhc3QubmV0L3BvZGNhc3QwOS9yc3NfMTg5OTYueG1s"] :
+        urls_hack = ["http://radiofrance-podcast.net/podcast09/rss_16634.xml",
+                     "http://radiofrance-podcast.net/podcast09/rss_15644.xml",
+                     "http://radiofrance-podcast.net/podcast09/rss_18996.xml",
+                     "http://radiofrance-podcast.net/podcast09/rss_12734.xml",
+                     "http://radiofrance-podcast.net/podcast09/rss_12097.xml",
+                     "http://cdn3-europe1.new2.ladmedia.fr/var/exports/podcasts/sound/Aux-origines-Franck-Ferrand.xml",
+                     "http://cdn1-europe1.new2.ladmedia.fr/var/exports/podcasts/sound/au-coeur-de-l-histoire.xml",
+                     "http://cdn-europe1.new2.ladmedia.fr/var/exports/podcasts/sound/ledito-politique-dyves-threard.xml",
+                     "http://radiofrance-podcast.net/podcast09/rss_10009.xml",
+                     "http://radiofrance-podcast.net/podcast09/rss_16370.xml",
+                     "http://radiofrance-podcast.net/podcast09/rss_11453.xml"]
+        for podcast_url in urls_hack :
+            podcast_id = base64.urlsafe_b64encode(podcast_url.encode("utf-8")).decode("utf-8")
             podcast = Podcast(podcast_id)
             podcast.get_content()
             res.append(podcast)
