@@ -23,11 +23,7 @@ from ..lib.resources.url_helper import UrlHelper
 from ..models.podcast import Podcast
 
 from .episode_resource import EpisodeResource
-
-# http://localhost:8000/api/v1/podcasts/?url=aHR0cDovL2FwaS5ldXJvcGUxLmZyL3BvZGNhc3QvbXAzL2l0dW5lcy00MjM1MzQ4MDYvMjg1MDgxMS9wb2RjYXN0Lm1wMyZmaWxlbmFtZT1BQ0RIXy1fTCdpbnTDqWdyYWxlXzE5LzA5LzIwMTZfLV9MJ8OpdmFzaW9uX2QnSGVucmlfTWFzZXJzX2RlX0xhdHVkZS5tcDM=
-# http://localhost:8000/api/v1/podcasts/?url=aHR0cDovL21lZGlhLnJhZGlvZnJhbmNlLXBvZGNhc3QubmV0L3BvZGNhc3QwOS8xODk5Ni0xOC4wOS4yMDE2LUlURU1BXzIxMDc5NDc0LTAubXAz
-# http://localhost:8000/api/v1/podcasts/aHR0cDovL21lZGlhLnJhZGlvZnJhbmNlLXBvZGNhc3QubmV0L3BvZGNhc3QwOS8xODk5Ni0xOC4wOS4yMDE2LUlURU1BXzIxMDc5NDc0LTAubXAz/
-
+from .download_resource import DownloadResource
 
 class PodcastResource(Resource):
 
@@ -90,5 +86,15 @@ class PodcastResource(Resource):
                 rest_url='podcasts/:podcast_id/episodes/:episode_id/content',
                 child_resource=EpisodeResource(),
                 dispatch='get_mp3'
+            ),
+            UrlHelper().resource_url(
+                rest_url='podcasts/:podcast_id/episodes/:episode_id/contentwithtracker/:download_id',
+                child_resource=EpisodeResource(),
+                dispatch='get_mp3'
+            ),
+            UrlHelper().resource_url(
+                rest_url='downloads/:download_id',
+                child_resource=DownloadResource(),
+                dispatch='dispatch_detail'
             )
         ]

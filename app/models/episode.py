@@ -12,7 +12,6 @@ from synthetic import synthesize_property
 
 from .mixins.model_mixin import ModelMixin
 
-
 @synthesize_constructor()
 @synthesize_property('id', contract='string|None')
 @synthesize_property('url', contract='string|None')
@@ -30,6 +29,14 @@ class Episode(ModelMixin):
     def read(self) :
         r = requests.get(self.url,stream=True)
         return r.raw
+    
+    def getDownloadedStatus(self) :
+        r = EPISODES_REQUEST.get(self.id, None)
+        if r == None :
+            return "NotStarted"
+        if r.closed :
+            return "Finished"
+        return "Pending"
 
     @staticmethod
     def construct_episode_from_podcast_dict(data) :
