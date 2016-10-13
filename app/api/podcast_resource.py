@@ -23,7 +23,7 @@ from ..lib.resources.url_helper import UrlHelper
 from ..models.podcast import Podcast
 
 from .episode_resource import EpisodeResource
-from .download_resource import DownloadResource
+from .tracker_resource import TrackerResource
 
 class PodcastResource(Resource):
 
@@ -88,13 +88,14 @@ class PodcastResource(Resource):
                 dispatch='get_mp3'
             ),
             UrlHelper().resource_url(
-                rest_url='podcasts/:podcast_id/episodes/:episode_id/contentwithtracker/:download_id',
+                rest_url='podcasts/:podcast_id/episodes/:episode_id/contentwithtracker/:tracker_id',
                 child_resource=EpisodeResource(),
                 dispatch='get_mp3'
             ),
             UrlHelper().resource_url(
-                rest_url='downloads/:download_id',
-                child_resource=DownloadResource(),
+                rest_url='trackers/:tracker_id',
+                child_resource=TrackerResource(),
                 dispatch='dispatch_detail'
             )
         ]
+

@@ -12,23 +12,23 @@ from synthetic import synthesize_property
 
 from .mixins.model_mixin import ModelMixin
 
-DOWNLOAD_REQUEST = {}
+TRACKER_REQUEST = {}
 
 
 @synthesize_constructor()
 @synthesize_property('id', contract='string|None')
 #@synthesize_property('status', contract='string|None')
 
-class Download(ModelMixin):
+class Tracker(ModelMixin):
     def __init__(self, id) :
         self.id = id
         
     def setCloseable(self, closable) :
         self.closable = closable
-        DOWNLOAD_REQUEST[self.id] = self.closable
+        TRACKER_REQUEST[self.id] = self.closable
 
     def _getStatus(self) :
-        closable = DOWNLOAD_REQUEST.get(self.id, None)
+        closable = TRACKER_REQUEST.get(self.id, None)
         if closable == None :
             return "NotStarted"
         if closable.closed :
@@ -38,3 +38,4 @@ class Download(ModelMixin):
     def getStatus(self) :
         self.status = self._getStatus()
         return self.status
+

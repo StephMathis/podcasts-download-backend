@@ -8,6 +8,7 @@
 import base64
 import random
 
+import gevent
 from tastypie import fields
 from tastypie.exceptions import ImmediateHttpResponse
 from tastypie.http import HttpNotFound
@@ -21,7 +22,7 @@ from ..lib.resources.default_meta_mixin import DefaultMetaMixin
 from ..lib.resources.url_helper import UrlHelper
 from ..models.episode import Episode
 from ..models.podcast import Podcast
-from ..models.download import Download
+from ..models.tracker import Tracker
 
 # http://localhost:8000/api/v1/podcasts/?url=aHR0cDovL2FwaS5ldXJvcGUxLmZyL3BvZGNhc3QvbXAzL2l0dW5lcy00MjM1MzQ4MDYvMjg1MDgxMS9wb2RjYXN0Lm1wMyZmaWxlbmFtZT1BQ0RIXy1fTCdpbnTDqWdyYWxlXzE5LzA5LzIwMTZfLV9MJ8OpdmFzaW9uX2QnSGVucmlfTWFzZXJzX2RlX0xhdHVkZS5tcDM=
 # http://localhost:8000/api/v1/podcasts/?url=aHR0cDovL21lZGlhLnJhZGlvZnJhbmNlLXBvZGNhc3QubmV0L3BvZGNhc3QwOS8xODk5Ni0xOC4wOS4yMDE2LUlURU1BXzIxMDc5NDc0LTAubXAz
@@ -71,13 +72,15 @@ class EpisodeResource(Resource):
     def get_mp3(self, bundle, **kwargs) :
         podcast_id = kwargs.get('podcast_id')
         episode_id = kwargs.get('episode_id')
-        download_id = kwargs.get('download_id')
+        tracker_id = kwargs.get('tracker_id')
 
         episode = self._get_episode(podcast_id, episode_id)    
         raw = episode.read()
-        if download_id :
-            download = Download(download_id)
-            download.setCloseable(raw)
+
+        if tracker_id :
+            tracker = Tracker(tracker_id)
+            tracker.setCloseable(raw)
+
         resp = StreamingHttpResponse(raw, content_type=episode.content_type)
         resp["Content-Disposition"] = 'attachment; filename="%s.mp3"' % 'ZeFichier' # episode.title
         return resp

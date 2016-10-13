@@ -30,14 +30,6 @@ class Episode(ModelMixin):
         r = requests.get(self.url,stream=True)
         return r.raw
     
-    def getDownloadedStatus(self) :
-        r = EPISODES_REQUEST.get(self.id, None)
-        if r == None :
-            return "NotStarted"
-        if r.closed :
-            return "Finished"
-        return "Pending"
-
     @staticmethod
     def construct_episode_from_podcast_dict(data) :
         """
