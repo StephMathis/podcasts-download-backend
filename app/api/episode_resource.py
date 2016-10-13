@@ -27,8 +27,6 @@ from ..models.download import Download
 # http://localhost:8000/api/v1/podcasts/?url=aHR0cDovL21lZGlhLnJhZGlvZnJhbmNlLXBvZGNhc3QubmV0L3BvZGNhc3QwOS8xODk5Ni0xOC4wOS4yMDE2LUlURU1BXzIxMDc5NDc0LTAubXAz
 # http://localhost:8000/api/v1/podcasts/aHR0cDovL21lZGlhLnJhZGlvZnJhbmNlLXBvZGNhc3QubmV0L3BvZGNhc3QwOS8xODk5Ni0xOC4wOS4yMDE2LUlURU1BXzIxMDc5NDc0LTAubXAz/
 
-EPISODES_REQUEST = {}
-
 
 class EpisodeResource(Resource):
 
@@ -81,7 +79,7 @@ class EpisodeResource(Resource):
             download = Download(download_id)
             download.setCloseable(raw)
         resp = StreamingHttpResponse(raw, content_type=episode.content_type)
-        resp["Content-Disposition"] = 'attachment; filename="%s.mp3"' % episode.title
+        resp["Content-Disposition"] = 'attachment; filename="%s.mp3"' % 'ZeFichier' # episode.title
         return resp
 
     def prepend_urls___(self):
