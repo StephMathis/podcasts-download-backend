@@ -8,6 +8,8 @@
 import base64
 import random
 
+import gevent
+
 from tastypie import fields
 from tastypie.exceptions import ImmediateHttpResponse
 from tastypie.http import HttpNotFound
@@ -21,7 +23,6 @@ from ..lib.resources.default_meta_mixin import DefaultMetaMixin
 from ..lib.resources.url_helper import UrlHelper
 
 from ..models.tracker import Tracker
-
 
 class TrackerResource(Resource):
 

@@ -17,6 +17,9 @@ from tastypie.resources import Resource
 from django.conf.urls import url
 from django.http import StreamingHttpResponse
 
+from django.core.signals import request_finished
+from django.dispatch import receiver
+
 from .wish.wish_resource import WishResource
 from ..lib.resources.default_meta_mixin import DefaultMetaMixin
 from ..lib.resources.url_helper import UrlHelper
@@ -43,7 +46,14 @@ class EpisodeResource(Resource):
     class Meta :
         resource_name = 'episodes'
         include_resource_uri = False
-        
+
+      
+    # @receiver(request_finished)
+    # def my_callback(sender, **kwargs):
+    #     print("Request finished!")
+    #     print(dir(kwargs['signal']))
+    #     print(dir(sender))
+    #     print(sender.request_class)
 
     def _get_episode(self, podcast_id, episode_id) :
         podcast = Podcast(podcast_id)
@@ -78,6 +88,8 @@ class EpisodeResource(Resource):
         raw = episode.read()
 
         if tracker_id :
+            #g = gevent.Greenlet(myfunction,closeable=raw)
+            #g.start()
             tracker = Tracker(tracker_id)
             tracker.setCloseable(raw)
 
