@@ -36,7 +36,7 @@ class Tracker(ModelMixin):
         
     def setCloseable(self, closeable) :
         mc = memcache.Client(['127.0.0.1:11211'], debug=0)
-        mc.set(tracker.id, "Pending")
+        mc.set(self.id, "Pending")
         _thread.start_new_thread( callback, (self, closeable,) )
 
     # def _getStatus(self) :
