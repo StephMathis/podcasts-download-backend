@@ -25,7 +25,8 @@ from ..lib.resources.default_meta_mixin import DefaultMetaMixin
 from ..lib.resources.url_helper import UrlHelper
 from ..models.episode import Episode
 from ..models.podcast import Podcast
-from ..models.tracker import Tracker
+# from ..models.tracker import Tracker
+from ..models.trackergroup import TrackerGroup
 
 # http://localhost:8000/api/v1/podcasts/?url=aHR0cDovL2FwaS5ldXJvcGUxLmZyL3BvZGNhc3QvbXAzL2l0dW5lcy00MjM1MzQ4MDYvMjg1MDgxMS9wb2RjYXN0Lm1wMyZmaWxlbmFtZT1BQ0RIXy1fTCdpbnTDqWdyYWxlXzE5LzA5LzIwMTZfLV9MJ8OpdmFzaW9uX2QnSGVucmlfTWFzZXJzX2RlX0xhdHVkZS5tcDM=
 # http://localhost:8000/api/v1/podcasts/?url=aHR0cDovL21lZGlhLnJhZGlvZnJhbmNlLXBvZGNhc3QubmV0L3BvZGNhc3QwOS8xODk5Ni0xOC4wOS4yMDE2LUlURU1BXzIxMDc5NDc0LTAubXAz
@@ -82,16 +83,24 @@ class EpisodeResource(Resource):
     def get_mp3(self, bundle, **kwargs) :
         podcast_id = kwargs.get('podcast_id')
         episode_id = kwargs.get('episode_id')
-        tracker_id = kwargs.get('tracker_id')
+        tracker_id = None
+        tracker_group_id = bundle.GET.get('tracker_group_id', None)
+        if tracker_group_id :
+            print("tracker_group_id=%s",tracker_group_id)
+        else :
+            print("arghh", bundle.GET)
 
         episode = self._get_episode(podcast_id, episode_id)    
         raw = episode.read()
 
-        if tracker_id :
-            #g = gevent.Greenlet(myfunction,closeable=raw)
-            #g.start()
-            tracker = Tracker(tracker_id)
-            tracker.setCloseable(raw)
+        # if tracker_id :
+        #     #g = gevent.Greenlet(myfunction,closeable=raw)
+        #     #g.start()
+        #     tracker = Tracker(tracker_id)
+        #     tracker.setCloseable(raw)
+        if tracker_group_id :
+            tracker_group = TrackerGroup(tracker_group_id)
+            tracker_group.add_closeable(episode_id, raw)
 
         resp = StreamingHttpResponse(raw, content_type=episode.content_type)
         resp["Content-Disposition"] = 'attachment; filename="%s.mp3"' % 'ZeFichier' # episode.title

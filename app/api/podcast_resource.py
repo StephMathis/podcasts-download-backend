@@ -24,6 +24,7 @@ from ..models.podcast import Podcast
 
 from .episode_resource import EpisodeResource
 from .tracker_resource import TrackerResource
+from .trackergroup_resource import TrackerGroupResource
 
 class PodcastResource(Resource):
 
@@ -95,6 +96,11 @@ class PodcastResource(Resource):
             UrlHelper().resource_url(
                 rest_url='trackers/:tracker_id',
                 child_resource=TrackerResource(),
+                dispatch='dispatch_detail'
+            ),
+            UrlHelper().resource_url(
+                rest_url='trackergroups/:tracker_group_id',
+                child_resource=TrackerGroupResource(),
                 dispatch='dispatch_detail'
             )
         ]
