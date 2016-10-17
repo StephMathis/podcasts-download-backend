@@ -27,7 +27,7 @@ from ..models.trackergroup import TrackerGroup
 class TrackerGroupResource(Resource):
 
     tracker_group_id = fields.CharField(attribute='id', default=None)
-    items_status = fields.CharField(attribute='items_status', default=None)
+    items_status = fields.ListField(attribute='items_status', default=None)
     
     class Meta :
         resource_name = 'trackergroups'

@@ -25,7 +25,6 @@ from ..lib.resources.default_meta_mixin import DefaultMetaMixin
 from ..lib.resources.url_helper import UrlHelper
 from ..models.episode import Episode
 from ..models.podcast import Podcast
-# from ..models.tracker import Tracker
 from ..models.trackergroup import TrackerGroup
 
 # http://localhost:8000/api/v1/podcasts/?url=aHR0cDovL2FwaS5ldXJvcGUxLmZyL3BvZGNhc3QvbXAzL2l0dW5lcy00MjM1MzQ4MDYvMjg1MDgxMS9wb2RjYXN0Lm1wMyZmaWxlbmFtZT1BQ0RIXy1fTCdpbnTDqWdyYWxlXzE5LzA5LzIwMTZfLV9MJ8OpdmFzaW9uX2QnSGVucmlfTWFzZXJzX2RlX0xhdHVkZS5tcDM=

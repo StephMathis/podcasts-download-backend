@@ -21,7 +21,7 @@ from .mixins.model_mixin import ModelMixin
 @synthesize_property('id', contract='string|None')
 #@synthesize_property('status', contract='string|None')
 
-def callback(key, closeable) :
+def waiting_until_closed(key, closeable) :
     while closeable.closed == False:
         time.sleep(1)
         print('myfunction',time.ctime(time.time()))
@@ -46,15 +46,7 @@ class TrackerGroup(ModelMixin):
         mc.set(self.id,items)
         key = self._get_item_key(item_id)
         mc.set(key , "Pending")
-        _thread.start_new_thread( callback, (key, closeable,) )
-
-    # def _getStatus(self) :
-    #     closable = TRACKER_REQUEST.get(self.id, None)
-    #     if closable == None :
-    #         return "NotStarted"
-    #     if closable.closed :
-    #         return "Finished"
-    #     return "Pending"
+        _thread.start_new_thread( waiting_until_closed, (key, closeable,) )
 
     def get_items_status(self) :
         items_status = []
