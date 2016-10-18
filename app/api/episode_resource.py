@@ -15,7 +15,7 @@ from tastypie.http import HttpNotFound
 from tastypie.resources import Resource
 
 from django.conf.urls import url
-from django.http import StreamingHttpResponse
+from django.http import FileResponse
 
 from django.core.signals import request_finished
 from django.dispatch import receiver
@@ -101,7 +101,7 @@ class EpisodeResource(Resource):
             tracker_group = TrackerGroup(tracker_group_id)
             tracker_group.add_closeable(episode_id, raw)
 
-        resp = StreamingHttpResponse(raw, content_type=episode.content_type)
+        resp = FileResponse(raw, content_type=episode.content_type)
         resp["Content-Disposition"] = 'attachment; filename="%s.mp3"' % 'ZeFichier' # episode.title
         return resp
 
