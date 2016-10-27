@@ -6,6 +6,7 @@
 #
 import base64
 import requests
+import unicodedata
 
 from synthetic import synthesize_constructor
 from synthetic import synthesize_property
@@ -51,6 +52,7 @@ class Episode(ModelMixin):
         episode.url = data['guid']
         episode.duration = data['total_time']
         episode.title = data['title']
+        episode.title_ascii = unicodedata.normalize('NFKD',episode.title).encode("ascii","ignore").decode("ascii")
         episode.subtitle = data['subtitle']
         episode.published = data['published']
         episode.size = data['enclosures'][0]['file_size']
