@@ -56,7 +56,7 @@ class UrlHelper(object):
 
             # Resource id replacement.
             if self._is_rest_id_split(split=split):
-                regex_url += r"(?P<{resource_id_name}>\w[\w-]*)".format(resource_id_name=split[1:])
+                regex_url += r"(?P<{resource_id_name}>\w[\w=-]*)".format(resource_id_name=split[1:])
 
             # Resource name replacement.
             else:
