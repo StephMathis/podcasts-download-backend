@@ -67,12 +67,7 @@ class EpisodeResource(Resource):
         podcast_id = kwargs.get('podcast_id')
         episode_id = kwargs.get('episode_id')
 
-        # fields_txt = bundle.request.GET.get('fields',None)
-        # if fields_txt :
-        #     fields = fields_txt.split(',')
-        #     if 'size' in fields :
-        #         episode.read_headers()
-        print(kwargs)
+        #print("=============> EpisodeResource.obj_get: kwargs=",kwargs)
         return self._get_episode(podcast_id, episode_id)
 
         

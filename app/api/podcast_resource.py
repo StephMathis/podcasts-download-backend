@@ -43,7 +43,11 @@ class PodcastResource(Resource):
         include_resource_uri = False
 
     def obj_get(self, bundle, **kwargs):
-        pod_id = kwargs.get('pk')
+        pod_id = kwargs.get('podcast_id')
+        # print("=============> PodcastResource.obj_get: kwargs=",kwargs)
+        # print("=============> PodcastResource.obj_get: pod_id=", pod_id)
+        # print("=============> PodcastResource.obj_get: prepend_urls=", self.prepend_urls())
+        
         podcast = Podcast(pod_id)
         podcast.get_content()
         return podcast
@@ -72,6 +76,11 @@ class PodcastResource(Resource):
 
     def prepend_urls(self):
         return [
+            UrlHelper().resource_url(
+                rest_url='podcasts/:podcast_id',
+                child_resource=PodcastResource(),
+                dispatch='dispatch_detail'
+            ),            
             UrlHelper().resource_url(
                 rest_url='podcasts/:podcast_id/episodes',
                 child_resource=EpisodeResource(),
