@@ -79,25 +79,16 @@ class EpisodeResource(Resource):
         episode_id = kwargs.get('episode_id')
         tracker_id = None
         tracker_group_id = bundle.GET.get('tracker_group_id', None)
-        if tracker_group_id :
-            print("tracker_group_id=%s",tracker_group_id)
-        else :
-            print("arghh", bundle.GET)
 
         episode = self._get_episode(podcast_id, episode_id)    
         raw = episode.read()
 
-        # if tracker_id :
-        #     #g = gevent.Greenlet(myfunction,closeable=raw)
-        #     #g.start()
-        #     tracker = Tracker(tracker_id)
-        #     tracker.setCloseable(raw)
         if tracker_group_id :
             tracker_group = TrackerGroup(tracker_group_id)
             tracker_group.add_closeable(episode_id, raw)
 
         resp = FileResponse(raw, content_type=episode.content_type)
-        resp["Content-Disposition"] = 'attachment; filename="%s.mp3"' % 'ZeFichier' # episode.title
+        resp["Content-Disposition"] = 'attachment; filename="%s.mp3"' % episode.title_ascii
         return resp
 
     def prepend_urls___(self):
