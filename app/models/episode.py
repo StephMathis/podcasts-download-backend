@@ -54,7 +54,11 @@ class Episode(ModelMixin):
         episode.title = data['title']
         episode.title_ascii = unicodedata.normalize('NFKD',episode.title).encode("ascii","ignore").decode("ascii")
         episode.subtitle = data['subtitle']
-        episode.published = data['published']
+        episode.published = data['published']        
         episode.size = data['enclosures'][0]['file_size']
+        if episode.size == -1 :
+            # in some cases, (http://cdn1-europe1.new2.ladmedia.fr/var/exports/podcasts/sound/au-coeur-de-l-histoire.xml),
+            # the file size is set to -1 ...
+            episode.size = None 
         return episode
 

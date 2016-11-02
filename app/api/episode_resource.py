@@ -89,6 +89,8 @@ class EpisodeResource(Resource):
 
         resp = FileResponse(raw, content_type=episode.content_type)
         resp["Content-Disposition"] = 'attachment; filename="%s.mp3"' % episode.title_ascii
+        if episode.size != None :
+            resp["Content-Length"] = int(episode.size)
         return resp
 
     def prepend_urls___(self):
