@@ -111,3 +111,5 @@ TASTYPIE_ALLOW_MISSING_SLASH = True
 # cors
 CORS_ORIGIN_ALLOW_ALL = True
 
+# podcast - channel
+CHANNEL_ROOT_PATH = os.path.join(BASE_DIR, 'var', 'channels')
