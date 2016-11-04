@@ -66,6 +66,7 @@ class PodcastResource(Resource):
                      "http://cdn-europe1.new2.ladmedia.fr/var/exports/podcasts/sound/ledito-politique-dyves-threard.xml",
                      "http://radiofrance-podcast.net/podcast09/rss_10009.xml",
                      "http://radiofrance-podcast.net/podcast09/rss_16370.xml",
+                     "http://radiofrance-podcast.net/podcast09/rss_11548.xml",
                      "http://radiofrance-podcast.net/podcast09/rss_11453.xml"]
         for podcast_url in urls_hack :
             podcast_id = base64.urlsafe_b64encode(podcast_url.encode("utf-8")).decode("utf-8")
