@@ -1,0 +1,235 @@
+
+
+{
+   "swagger": "2.0",
+   "info": {
+      "description": "API backend for Podcasts Metaheuristc App",
+      "version": "1.0.0",
+      "title": "Podcasts Metaheuristic API",
+      "termsOfService": "http://swagger.io/terms/",
+      "license": {
+         "name": "Apache 2.0",
+         "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+      }
+   },
+   "host": "metaheuristic.fr",
+   "basePath": "/podcast-api/v1",
+   "tags": [
+      {
+         "name": "podcast",
+         "description": "A podcast composed by episodes"
+      },
+      {
+         "name": "episode",
+         "description": "A mp3 file in a podcast"
+      },
+      {
+         "name": "trackergroup",
+         "description": "a download tracker, just to know how many downloads are pending"
+      }
+   ],
+   "schemes": [
+      "https"
+   ],
+   "paths": {
+      "/podcasts": {
+         "get": {
+            "tags": [
+               "podcast"
+            ],
+            "summary": "Somes podcasts registered in the backend",
+            "description": "",
+            "produces": [
+               "application/json"
+            ],
+            "responses": {
+               "200": {
+                  "description": "A podcasts array",
+                  "schema": {
+                     "type": "array",
+                     "items": {
+                        "$ref": "#/definitions/Podcast"
+                     }
+                  }
+               }
+            }
+         }
+      },
+      "/podcasts/{podcast_id}": {
+         "get": {
+            "tags": [
+               "podcast"
+            ],
+            "summary": "Find podcast by ID",
+            "description": "Returns a single podcast",
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "podcast_id",
+                  "in": "path",
+                  "description": "ID of podcast to return",
+                  "required": true,
+                  "type": "string"
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "successful operation",
+                  "schema": {
+                     "$ref": "#/definitions/Podcast"
+                  }
+               },
+               "400": {
+                  "description": "Invalid ID supplied"
+               },
+               "404": {
+                  "description": "Podcast not found"
+               }
+            }
+         }
+      },
+      "/podcasts/{podcast_id}/episodes": {
+         "get": {
+            "tags": [
+               "podcast",
+               "episode"
+            ],
+            "summary": "episodes of the podcast",
+            "description": "",
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "podcast_id",
+                  "in": "path",
+                  "description": "ID of podcast to return",
+                  "required": true,
+                  "type": "string"
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "An episodes array",
+                  "schema": {
+                     "type": "array",
+                     "items": {
+                        "$ref": "#/definitions/Episode"
+                     }
+                  }
+               }
+            }
+         }      
+      },
+      "/podcasts/{podcast_id}/episodes/{episode_id}": {
+         "get": {
+            "tags": [
+               "podcast",
+               "episode"
+            ],
+            "summary": "episodes of the podcast",
+            "description": "",
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "podcast_id",
+                  "in": "path",
+                  "description": "ID of podcast to return",
+                  "required": true,
+                  "type": "string"
+               },
+               {
+                  "name": "episode_id",
+                  "in": "path",
+                  "description": "ID of episode to return",
+                  "required": true,
+                  "type": "string"
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "An episodes array",
+                  "schema": {
+                     "type": "array",
+                     "items": {
+                        "$ref": "#/definitions/Episode"
+                     }
+                  }
+               }
+            }
+         }      
+      }
+   },
+   "definitions": {
+      "Podcast": {
+         "type": "object",
+         "properties": {
+            "podcast_id": {
+               "type": "string",
+               "description": "Unique identifier representing a specific podcasts."
+            },
+            "podcast_url": {
+               "type": "string",
+               "description": "public podcast url."
+            },
+            "content": {
+               "type": "object",
+               "properties": {
+                  "cover_url": {
+                     "type": "string",
+                     "description": "Podcast image url."
+                  },               
+                  "description": {
+                     "type": "string",
+                     "description": "podcast description."
+                  }              
+               }
+            },
+            "episodes": {
+               "type": "array",
+               "items": {
+                  "$ref": "#/definitions/Episode"
+               }
+            }
+         }
+      },
+      "Episode": {
+         "type": "object",
+         "properties": {
+            "episode_id": {
+               "type": "string",
+               "description": "episode id"
+            },
+            "title": {
+               "type": "string",
+               "description": "title episode"
+            },
+            "subtitle": {
+               "type": "string",
+               "description": "subtitle episode"
+            },
+            "size": {
+               "type": "number",
+               "description": "filesize in bytes, sometimes equal to -1 if not known"
+            },
+            "source_url": {
+               "type": "string",
+               "description": "mp3 episode url"
+            },
+            "published": {
+               "type": "string",
+               "description": "epoch in a string format"
+            },
+            "duration": {
+               "type": "string",
+               "description": "episode duration in secondes"
+            }
+         }
+      }
+   }
+}
+
