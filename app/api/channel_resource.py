@@ -23,6 +23,7 @@ from ..lib.resources.default_meta_mixin import DefaultMetaMixin
 from ..lib.resources.url_helper import UrlHelper
 
 from ..models.channel import Channel
+from ..lib.tools import id2text, text2id
 
 class ChannelResource(Resource):
 
@@ -54,10 +55,14 @@ class ChannelResource(Resource):
         else :
             raise NotFound("Channel object not found")
         return channel
-    
+
     def obj_create(self, bundle, **kwargs):
-        print("obj_create",bundle,kwargs,bundle.data['title'])
-        channel_id = Channel.title2id(bundle.data['title'])
+        title = bundle.data.get('title',None)
+        print("obj_create",bundle,kwargs,title)
+        if title == None :
+            print("obj_create channel_id is None")
+            return bundle
+        channel_id = Channel.title2id(title)
         if Channel.exists(channel_id) :
             # already exists
             print("obj_create : already exists")

@@ -71,7 +71,8 @@
                   "in": "path",
                   "description": "ID of podcast to return",
                   "required": true,
-                  "type": "string"
+                  "type": "string",
+                  "value": "123"
                }
             ],
             "responses": {
