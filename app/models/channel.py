@@ -110,7 +110,7 @@ class FileChannelStore(ChannelStore) :
     def get_channel_id_list(self) :
         channel_id_list = []
         for channel_id in os.listdir(self._get_root_path()) :
-            channel_id_list.append(self.get_or_create_channel(channel_id))
+            channel_id_list.append(channel_id)
         return channel_id_list
     
 

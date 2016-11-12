@@ -28,6 +28,9 @@ from ..lib.tools import id2text, text2id, NotFound, AlreadyExists
 class ChannelResource(Resource):
 
     channel_id = fields.CharField(attribute='id', default=None)
+    title = fields.CharField(attribute='title', default=None)
+    comment = fields.CharField(attribute='comment', default=None)
+    thumbnail_url = fields.CharField(attribute='thumbnail_url', default=None)
     podcasts = fields.ListField(attribute='podcasts', default=None)
     
     class Meta :
@@ -46,7 +49,7 @@ class ChannelResource(Resource):
     def obj_get_list(self, bundle, **kwargs):
         channel_store = FileChannelStore()
         # map(channel_store.get, channel_store.get_channel_id_list())
-        return [ channel_store.get(channel_id) for channel_id in channel_store.get_channel_id_list() ]
+        return [ channel_store.get_channel(channel_id) for channel_id in channel_store.get_channel_id_list() ]
 
     # def patch_detail(self, bundle, **kwargs):
     #     print("patch_detail",bundle,kwargs)
@@ -75,7 +78,7 @@ class ChannelResource(Resource):
         channel_store.save_channel(bundle.obj)
         return bundle
 
-    
+
     def obj_update(self, bundle, **kwargs):
         print("obj_update, begin bundle.obj=", bundle.obj)
         print("obj_update, begin bundle.data=", bundle.data)
