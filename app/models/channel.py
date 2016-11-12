@@ -26,7 +26,7 @@ class Channel(ModelMixin):
         self.podcasts = kargs.get('podcasts',[])
     
     def add_podcast(self, podcast_id) :
-        if podcast_id not in self._podcasts :
+        if podcast_id not in self.podcasts :
             self.podcasts.append(podcast_id)
             # the caller has certainly to save the channel
 
@@ -77,7 +77,16 @@ class ChannelStore :
         d = channel.__dict__.copy()
         d.update(update_data)
         d.pop('id')
-        return Channel(channel.id, **d)
+        updated_channel = Channel(channel.id, **d)
+
+        # the code here is just because the podcast_id cannot be 
+        # computed by frontend
+        if d.get('new_podcast_url') :
+            new_podcast_url = d['new_podcast_url']
+            new_podcast_id = text2id(new_podcast_url)
+            updated_channel.add_podcast(new_podcast_id)
+
+        return updated_channel
 
 
     def save_channel(self, channel) :
