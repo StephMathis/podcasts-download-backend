@@ -14,76 +14,130 @@ from synthetic import synthesize_property
 from .mixins.model_mixin import ModelMixin
 from django.conf import settings
 
+from ..lib.tools import id2text, text2id, NotFound, AlreadyExists, ShouldNotBeCalled
+
+
 class Channel(ModelMixin):
-    def __init__(self, id) :
+    def __init__(self, id, **kargs) :
         self.id = id
-        self.title = Channel.id2title(id)
-        self.path = Channel.get_path(id)
-        self.podcasts = None
-        if not os.path.exists(Channel.get_root_path()) :
-            print("*** %s does not exist" % (Channel.get_root_path()))
-            # TODO : throw an Exception
-        if not os.path.isfile(self.path) :
-            # channel does not exist, it's a new one
-            self.podcasts = []
-            self._save()
-        else :
-            self._load()
-    
-    def _load(self) :
-        if self.podcasts != None :
-            return
-                
-        if         os.path.exists(self.path) \
-           and     os.path.isfile(self.path) \
-           and not os.path.islink(self.path) :
-            with open(self.path) as data_file:    
-                self.podcasts = json.load(data_file)
-    
-    def _save(self) :
-        f = open(self.path,'w')
-        f.write(json.dumps(self.podcasts))
-        f.close()
-
-    def get_title(self) :
-        return Channel.id2title(self.id)
-
-    def get_podcasts(self) :
-        return self.podcasts
+        self.title = kargs.get('title',"no title")
+        self.comment = kargs.get('comment',"no comment")
+        self.thumbnail_url = kargs.get('thumbnail_url',"")
+        self.podcasts = kargs.get('podcasts',[])
     
     def add_podcast(self, podcast_id) :
-        if podcast_id not in self.podcasts :
+        if podcast_id not in self._podcasts :
             self.podcasts.append(podcast_id)
-            self._save()
+            # the caller has certainly to save the channel
 
-    @staticmethod
-    def get_root_path() :
+    def __str__(self):
+        return u"{id}-{title}-{comment}-{thumbnail_url}-{podcasts}".format(id=self.id,
+                                                 title=self.title,
+                                                 comment=self.comment,
+                                                 thumbnail_url=self.thumbnail_url,
+                                                 podcasts=self.podcasts)
+
+class ChannelStore :
+    def __init__(self):
+        pass
+    
+
+    def get_channel_id_list(self) :
+        raise ShouldNotBeCalled("get_channel_id_list in ChannelStore should be pure virtual")
+
+
+    def exists(self, channel_id) :
+        return channel_id in self.get_channel_id_list()
+    
+
+    def get_channel(self, channel_id) :
+        raise ShouldNotBeCalled("get_channel in ChannelStore should be pure virtual")
+    
+
+    def create_channel(self, **kargs) :
+        channel_id = None
+        try :
+            channel_id = self.title2id(kargs['title']) # title is require
+        except KeyError :
+            raise KeyError('missing "title"" argument to create a channel')
+
+        if self.exists(channel_id) :
+            raise AlreadyExists("The channel %s already exists !" % kargs['title'], self.get_channel(channel_id))
+
+        return Channel(channel_id, **kargs)
+    
+
+    def delete_channel(self, channel) :
+        raise ShouldNotBeCalled("get_channel in ChannelStore should be pure virtual")
+    
+
+    def update_channel(self, **kargs) :
+        channel = kargs['channel']
+        update_data = kargs['update_data']
+        d = channel.__dict__.copy()
+        d.update(update_data)
+        d.pop('id')
+        return Channel(channel.id, **d)
+
+
+    def save_channel(self, channel) :
+        raise ShouldNotBeCalled("save_channel in ChannelStore should be pure virtual")
+
+
+    def id2title(self, id) :
+        return id2text(id)
+    
+
+    def title2id(self, title) :
+        return text2id(title) 
+
+
+class FileChannelStore(ChannelStore) :
+    def __init__(self) :
+        if not os.path.exists(self._get_root_path()) :
+            print("*** %s does not exist" % (self._get_root_path()))
+            # TODO : throw an Exception
+        
+
+    def _get_root_path(self) :
         return getattr(settings, "CHANNEL_ROOT_PATH", None)
     
-    @staticmethod
-    def get_path(channel_id) :
-        return os.path.join(Channel.get_root_path(), channel_id)
 
-    @staticmethod
-    def id2title(id) :
-        return base64.urlsafe_b64decode(id).decode("utf-8")
+    def _get_path(self, channel_id) :
+        return os.path.join(self._get_root_path(), channel_id)
+
+
+    def get_channel_id_list(self) :
+        channel_id_list = []
+        for channel_id in os.listdir(self._get_root_path()) :
+            channel_id_list.append(self.get_or_create_channel(channel_id))
+        return channel_id_list
     
-    @staticmethod
-    def title2id(title) :
-        return base64.urlsafe_b64encode(title.encode("utf-8")).decode("utf-8")
 
-    @staticmethod
-    def get_channels() :
-        channels = []
-        for channel_id in os.listdir(Channel.get_root_path()) :
-            channels.append(Channel(channel_id))
-        return channels
-    
-    @staticmethod
-    def exists(channel_id) :
-        return os.path.exists(Channel.get_path(channel_id)) 
-            
-        
-        
-            
+    def exists(self, channel_id) :
+        path = self._get_path(channel_id)
+        return os.path.exists(path) and os.path.isfile(path) and not os.path.islink(path)
 
+
+    def get_channel(self, channel_id) :
+        if not self.exists(channel_id) :
+            raise NotFound("channel %s was not found", channel_id)
+        with open(self._get_path(channel_id)) as data_file:
+            d = json.load(data_file)
+            id = d.pop('id')
+            channel = Channel(id, **d)
+        return channel
+ 
+    def delete_channel(self, channel) :
+        path = self._get_path(channel.id)
+        if self.exists(channel.id) :
+            os.remove(path)
+        else :
+            raise NotFound("path %s corresponding to channel %s was not found", path, channel_id)
+           
+
+    def save_channel(self, channel) :
+        print("save_channel", channel)
+        f = open(self._get_path(channel.id), 'w')
+        f.write(json.dumps(channel.__dict__))
+        f.close() 

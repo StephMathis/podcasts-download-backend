@@ -1,2 +1,2 @@
 . tools/export_env.sh local
-./manage.py test
+python3 ./manage.py test
