@@ -38,7 +38,7 @@ class ChannelResource(Resource):
         include_resource_uri = False
         
     def obj_get(self, bundle, **kwargs):
-        print("obj_get")
+        #print("obj_get")
         channel_store = FileChannelStore()
         channel_id = kwargs.get('channel_id')
         try :
@@ -64,14 +64,14 @@ class ChannelResource(Resource):
     #     return channel
 
     def obj_create(self, bundle, **kwargs):
-        print("obj_create, begin bundle.obj=", bundle.obj)
-        print("obj_create, begin bundle.data=", bundle.data)
+        #print("obj_create, begin bundle.obj=", bundle.obj)
+        #print("obj_create, begin bundle.data=", bundle.data)
         # Populate bundle.obj with updated data from bundle.data
         channel_store = FileChannelStore()
         try :
             bundle.obj = channel_store.create_channel(**bundle.data)
         except AlreadyExists as e :
-            print("obj_create : already exists", bundle.data)
+            #print("obj_create : already exists", bundle.data)
             bundle.obj = e.obj
             raise ImmediateHttpResponse(response=HttpConflict())
         
@@ -80,14 +80,14 @@ class ChannelResource(Resource):
 
 
     def obj_update(self, bundle, **kwargs):
-        print("obj_update, begin bundle.obj=", bundle.obj)
-        print("obj_update, begin bundle.data=", bundle.data)
+        #print("obj_update, begin bundle.obj=", bundle.obj)
+        #print("obj_update, begin bundle.data=", bundle.data)
         if bundle.obj == None : 
             # with patch method, obj_get is already called, in put method, i call it manually
             bundle.obj = self.obj_get(bundle, **kwargs)
         self.full_hydrate(bundle)
-        print("obj_update, full_hydrate bundle.obj=", bundle.obj)
-        print("obj_update, full_hydrate bundle.data=", bundle.data)
+        #print("obj_update, full_hydrate bundle.obj=", bundle.obj)
+        #print("obj_update, full_hydrate bundle.data=", bundle.data)
 
         channel_store = FileChannelStore()
         bundle.obj = channel_store.update_channel(channel=bundle.obj, update_data = bundle.data)
@@ -97,11 +97,11 @@ class ChannelResource(Resource):
 
 
     def obj_delete(self, bundle, **kwargs):
-        print("obj_delete, begin bundle.obj=", bundle.obj)
-        print("obj_delete, begin bundle.data=", bundle.data)
-        print("obj_delete, begin kwargs=", kwargs)
+        #print("obj_delete, begin bundle.obj=", bundle.obj)
+        #print("obj_delete, begin bundle.data=", bundle.data)
+        #print("obj_delete, begin kwargs=", kwargs)
         channel = self.obj_get(bundle, **kwargs)
-        print("obj_delete, channel=", channel)
+        #print("obj_delete, channel=", channel)
         channel_store = FileChannelStore()
         channel_store.delete_channel(channel)
         return bundle

@@ -146,7 +146,7 @@ class FileChannelStore(ChannelStore) :
            
 
     def save_channel(self, channel) :
-        print("save_channel", channel)
+        #print("save_channel", channel)
         f = open(self._get_path(channel.id), 'w')
         f.write(json.dumps(channel.__dict__))
         f.close() 

@@ -39,7 +39,7 @@ class ChannelPodcastResource(Resource):
         #podcast_id = kwargs.get('podcast_id')
         podcast_url = bundle.data.get("podcast_url")
         podcast_id = text2id(podcast_url)
-        print("ChannelPodcastResource.obj_create",channel_id,podcast_url,podcast_id)
+        #print("ChannelPodcastResource.obj_create",channel_id,podcast_url,podcast_id)
         channel = None
         if Channel.exists(channel_id) :
             channel = Channel(channel_id)
