@@ -5,16 +5,26 @@
 # $Id: $
 #
 
+import os, shutil
 from mock import patch
 from six import u
 
-from app.models.channel import Channel
+from app.models.channel import Channel, ChannelStore, FileChannelStore
 from .lib.test_case import WtTestCase
 
 
 class TestChannelResource(WtTestCase):
+    
+    VAR_CHANNEL_DIR = "/tmp/podcasts-backend-test"
+
+    @classmethod
+    def setUpClass(cls):
+        pass
 
     def setUp(self):
+        if os.path.exists(TestChannelResource.VAR_CHANNEL_DIR) :
+            shutil.rmtree(TestChannelResource.VAR_CHANNEL_DIR)
+        os.mkdir(TestChannelResource.VAR_CHANNEL_DIR)
         super(TestChannelResource, self).setUp()
         self._reset()
 
@@ -22,20 +32,12 @@ class TestChannelResource(WtTestCase):
         super(TestChannelResource, self).tearDown()
         self._reset()
 
-    @patch.object(UserStore, 'user_list')
-    def test_should_get_channel_list(self, mock_user_list):
-        mock_user_list.return_value = [
-            User(
-                id=u("user_1"),
-                first_name=u("Foo")
-            ),
-            User(
-                id=u("user_2"),
-                first_name=u("John")
-            )
-        ]
+    @patch.object(FileChannelStore, '_get_root_path')
+    def test_should_get_empty_channel_list(self, mock__get_root_path):
+        mock__get_root_path.return_value = TestChannelResource.VAR_CHANNEL_DIR
 
-        response = self.api_client.get('/podcast-api/v1/channels/')
+        print("======================= test_should_get_empty_channel_list")
+        response = self.api_client.get('/podcast-api/v1/channels')
         self.assertHttpOK(response)
 
         data = self.deserialize(response)
@@ -46,83 +48,174 @@ class TestChannelResource(WtTestCase):
                 u'next': None,
                 u'offset': 0,
                 u'previous': None,
-                u'totalCount': 2},
-            u'objects': [
-                {
-                    u'firstName': u'Foo',
-                    u'id': u'user_1',
-                    u'lastName': None,
-                    u'resourceUri': u'/api/v1/users/user_1/',
-                    u'wishes': [
-                        {
-                            u'id': u'WISH123456',
-                            u'resourceUri': u'/api/v1/wishes/WISH123456/',
-                            u'title': u'Test'
-                        }
-                    ]
-                },
-                {
-                    u'firstName': u'John',
-                    u'id': u'user_2',
-                    u'lastName': None,
-                    u'resourceUri': u'/api/v1/users/user_2/',
-                    u'wishes': [
-                        {
-                            u'id': u'WISH123456',
-                            u'resourceUri': u'/api/v1/wishes/WISH123456/',
-                            u'title': u'Test'
-                        }
-                    ]
-                }
-            ]
+                u'total_count': 0},
+            u'objects': []          
+        }, data)    
+
+    @patch.object(FileChannelStore, '_get_root_path')
+    def test_should_create_channel_and_check_it_exits(self, mock__get_root_path):
+        mock__get_root_path.return_value = TestChannelResource.VAR_CHANNEL_DIR
+        print("======================= test_should_create_channel_and_check_it_exits")
+        response = self.api_client.post(
+            uri='/podcast-api/v1/channels',
+            data={
+                'title': u("Une chaine d'histoire")
+            }
+        )
+        self.assertHttpCreated(response)
+        self.assertEqual(b'',response.content) # no body in the response, just headers
+
+        # check if the channel has been created
+        response = self.api_client.get('/podcast-api/v1/channels')
+        self.assertHttpOK(response)
+
+        data = self.deserialize(response)
+
+        self.assertEqual({
+            u'meta': {
+                u'limit': 20,
+                u'next': None,
+                u'offset': 0,
+                u'previous': None,
+                u'total_count': 1},
+            u'objects': [{'channel_id': 'VW5lIGNoYWluZSBkJ2hpc3RvaXJl',
+                          'comment': 'no comment',
+                          'podcasts': [],
+                          'thumbnail_url': '',
+                          'title': "Une chaine d'histoire"}]         
         }, data)
 
-    def test_should_add_user(self):
-
-        user_store = UserStore()
+    @patch.object(FileChannelStore, '_get_root_path')
+    def test_should_reject_when_try_creating_existing_channel(self, mock__get_root_path) :
+        mock__get_root_path.return_value = TestChannelResource.VAR_CHANNEL_DIR
+        print("======================= test_should_reject_when_try_creating_existing_channel")
 
         response = self.api_client.post(
-            uri='/api/v1/users/',
+            uri='/podcast-api/v1/channels',
             data={
-                'firstName': u("Foo")
+                'title': u("Une chaine d'histoire")
             }
         )
 
         self.assertHttpCreated(response)
+        response = self.api_client.post(
+            uri='/podcast-api/v1/channels',
+            data={
+                'title': u"Une chaine d'histoire",
+                'comment': u'this is a significant comment',
+                'podcasts': ['aaa','bbb'],
+                'thumbnail_url': u'image_url'
+            }
+        )
+        self.assertHttpConflict(response)
+        self.assertEqual(b'',response.content) # no body in the response, just headers
+
+        # check if the existing channel has not been modified
+        response = self.api_client.get('/podcast-api/v1/channels')
+        self.assertHttpOK(response)
 
         data = self.deserialize(response)
 
-        self.assertEqual(1, len(user_store.user_list()))
+        self.assertEqual({
+            u'meta': {
+                u'limit': 20,
+                u'next': None,
+                u'offset': 0,
+                u'previous': None,
+                u'total_count': 1},
+            u'objects': [{'channel_id': 'VW5lIGNoYWluZSBkJ2hpc3RvaXJl',
+                          'comment': 'no comment',
+                          'podcasts': [],
+                          'thumbnail_url': '',
+                          'title': "Une chaine d'histoire"}]         
+        }, data)
+    
 
-        user_id = user_store.user_list()[0].id
+
+    @patch.object(FileChannelStore, '_get_root_path')
+    def test_should_put_exising_channel(self, mock__get_root_path) :
+        mock__get_root_path.return_value = TestChannelResource.VAR_CHANNEL_DIR
+
+        print("======================= test_should_put_exising_channel")
+        response = self.api_client.post(
+            uri='/podcast-api/v1/channels',
+            data={
+                'title': u"Une chaine d'histoire",
+                'comment': u'this is a significant comment',
+                'podcasts': ['aaa','bbb'],
+                'thumbnail_url': u'image_url'
+            }
+        )
+        self.assertHttpCreated(response)
+        
+        response = self.api_client.put(
+            uri='/podcast-api/v1/channels/VW5lIGNoYWluZSBkJ2hpc3RvaXJl',
+            data={
+                'title': u"Une chaine d'histoire modified",
+                'comment': u'this is a UNsignificant comment',
+                'podcasts': ['aaa'],
+                'new_podcast_url': u'ccc',
+                'thumbnail_url': u'image_url2'
+            }
+        )
+        self.assertHttpAccepted(response) # 202 Accepted
+        self.assertEqual(b'',response.content) # no body in the response, just headers
+
+        # check if the existing channel has not been modified
+        response = self.api_client.get('/podcast-api/v1/channels')
+        self.assertHttpOK(response)
+
+        data = self.deserialize(response)
 
         self.assertEqual({
-            u'firstName': u'Foo',
-            u'id': user_id,
-            u'lastName': None,
-            u'resourceUri': u'/api/v1/users/{}/'.format(user_id),
-            u'wishes': [
-                {
-                    u'id': u'WISH123456',
-                    u'resourceUri': u'/api/v1/wishes/WISH123456/',
-                    u'title': u'Test'
-                }
-            ]
+            u'meta': {
+                u'limit': 20,
+                u'next': None,
+                u'offset': 0,
+                u'previous': None,
+                u'total_count': 1},
+            u'objects': [{'channel_id': 'VW5lIGNoYWluZSBkJ2hpc3RvaXJl',
+                          'comment': 'this is a UNsignificant comment',
+                          'podcasts': ['aaa', 'Y2Nj'],
+                          'thumbnail_url': 'image_url2',
+                          'title': "Une chaine d'histoire modified"}]         
         }, data)
 
-    def test_should_delete_user(self):
 
-        user_store = UserStore()
+    @patch.object(FileChannelStore, '_get_root_path')
+    def test_should_delete_exising_channel(self, mock__get_root_path) :
+        mock__get_root_path.return_value = TestChannelResource.VAR_CHANNEL_DIR
 
-        foo = user_store.create_user(user=User(first_name=u("Foo")))
-        user_store.create_user(user=User(first_name=u("John")))
+        print("======================= test_should_delete_exising_channel")
+        response = self.api_client.post(
+            uri='/podcast-api/v1/channels',
+            data={
+                'title': u"Une chaine d'histoire",
+                'comment': u'this is a significant comment',
+                'podcasts': ['aaa'],
+                'thumbnail_url': u'image_url'
+            }
+        )
+        self.assertHttpCreated(response)
 
-        response = self.api_client.delete(uri='/api/v1/users/{}/'.format(foo.id))
+        response = self.api_client.delete(uri='/podcast-api/v1/channels/{}/'.format('VW5lIGNoYWluZSBkJ2hpc3RvaXJl'))
+        self.assertHttpAccepted(response) # 204 No content
 
-        self.assertHttpAccepted(response)
+        response = self.api_client.get('/podcast-api/v1/channels')
+        self.assertHttpOK(response)
 
-        self.assertEqual(1, len(user_store.user_list()))
-        self.assertEqual(u("John"), user_store.user_list()[0].first_name)
+        data = self.deserialize(response)
+
+        self.assertEqual({
+            u'meta': {
+                u'limit': 20,
+                u'next': None,
+                u'offset': 0,
+                u'previous': None,
+                u'total_count': 0},
+            u'objects': []          
+        }, data)         
+
 
     def _reset(self):
         pass
