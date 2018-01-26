@@ -57,7 +57,13 @@ class EpisodeResource(Resource):
 
     def _get_episode(self, podcast_id, episode_id) :
         podcast = Podcast(podcast_id)
+        for e in podcast.content['episodes']:
+            print("episode")
+            print("        guid ",e['guid'])
+            print("        title",e['title'])
+            
         episode_url = base64.urlsafe_b64decode(episode_id).decode("utf-8")
+        print("episode_url = %s" % episode_url)
         episode_dict = podcast.get_episode_dict(episode_url)
         episode = Episode.construct_episode_from_podcast_dict(episode_dict)
 

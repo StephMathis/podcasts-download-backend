@@ -85,6 +85,7 @@ class TestChannelResource(WtTestCase):
                           'title': "Une chaine d'histoire"}]         
         }, data)
 
+
     @patch.object(FileChannelStore, '_get_root_path')
     def test_should_reject_when_try_creating_existing_channel(self, mock__get_root_path) :
         mock__get_root_path.return_value = TestChannelResource.VAR_CHANNEL_DIR
@@ -147,7 +148,10 @@ class TestChannelResource(WtTestCase):
             }
         )
         self.assertHttpCreated(response)
-        
+
+        response = self.api_client.get('/podcast-api/v1/channels/VW5lIGNoYWluZSBkJ2hpc3RvaXJl')
+        self.assertHttpOK(response)
+
         response = self.api_client.put(
             uri='/podcast-api/v1/channels/VW5lIGNoYWluZSBkJ2hpc3RvaXJl',
             data={
@@ -180,6 +184,20 @@ class TestChannelResource(WtTestCase):
                           'thumbnail_url': 'image_url2',
                           'title': "Une chaine d'histoire modified"}]         
         }, data)
+
+        response = self.api_client.delete('/podcast-api/v1/channels/VW5lIGNoYWluZSBkJ2hpc3RvaXJl/podcasts/aaa')
+        self.assertHttpAccepted(response)
+        response = self.api_client.get('/podcast-api/v1/channels/VW5lIGNoYWluZSBkJ2hpc3RvaXJl')
+        self.assertHttpOK(response)
+        print(response)
+        data = self.deserialize(response)
+        self.assertEqual({
+                 'channel_id': u'VW5lIGNoYWluZSBkJ2hpc3RvaXJl',
+                 'title': u"Une chaine d'histoire modified",
+                 'comment': u'this is a UNsignificant comment',
+                 'podcasts': ['Y2Nj'],
+                 'thumbnail_url': u'image_url2'
+            }, data)    
 
 
     @patch.object(FileChannelStore, '_get_root_path')

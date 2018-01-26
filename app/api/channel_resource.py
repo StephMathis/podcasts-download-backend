@@ -38,7 +38,7 @@ class ChannelResource(Resource):
         include_resource_uri = False
         
     def obj_get(self, bundle, **kwargs):
-        #print("obj_get")
+        print("obj_get")
         channel_store = FileChannelStore()
         channel_id = kwargs.get('channel_id')
         try :
@@ -97,11 +97,11 @@ class ChannelResource(Resource):
 
 
     def obj_delete(self, bundle, **kwargs):
-        #print("obj_delete, begin bundle.obj=", bundle.obj)
+        print("obj_delete, begin bundle.obj=", bundle.obj)
         #print("obj_delete, begin bundle.data=", bundle.data)
         #print("obj_delete, begin kwargs=", kwargs)
         channel = self.obj_get(bundle, **kwargs)
-        #print("obj_delete, channel=", channel)
+        print("obj_delete, channel=", channel)
         channel_store = FileChannelStore()
         channel_store.delete_channel(channel)
         return bundle

@@ -29,6 +29,11 @@ class Channel(ModelMixin):
         if podcast_id not in self.podcasts :
             self.podcasts.append(podcast_id)
             # the caller has certainly to save the channel
+    
+    def remove_podcast(self, podcast_id) :
+        if podcast_id in self.podcasts :
+            self.podcasts.remove(podcast_id)
+            # the caller has certainly to save the channel
 
     def __str__(self):
         return u"{id}-{title}-{comment}-{thumbnail_url}-{podcasts}".format(id=self.id,

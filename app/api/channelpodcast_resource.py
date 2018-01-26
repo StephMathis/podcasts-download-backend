@@ -22,7 +22,7 @@ from .wish.wish_resource import WishResource
 from ..lib.resources.default_meta_mixin import DefaultMetaMixin
 from ..lib.resources.url_helper import UrlHelper
 
-from ..models.channel import Channel
+from ..models.channel import Channel, FileChannelStore
 from ..lib.tools import id2text, text2id
 
 class ChannelPodcastResource(Resource):
@@ -47,5 +47,19 @@ class ChannelPodcastResource(Resource):
             bundle.obj = channel
         return bundle
        
+    def obj_delete(self, bundle, **kwargs) :
+        print("ChannelPodcastResource : obj_delete")
+        channel_id = kwargs.get('channel_id')
+        podcast_id = kwargs.get('podcast_id')
+        print("ChannelPodcastResource :", channel_id, podcast_id)
+        channel = None
+        channel_store = FileChannelStore()
+        if channel_store.exists(channel_id) :
+            channel = channel_store.get_channel(channel_id)
+            channel.remove_podcast(podcast_id)
+            channel_store.save_channel(channel)
+            bundle.obj = channel
+        return bundle
+
 
 

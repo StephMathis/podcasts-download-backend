@@ -19,18 +19,24 @@ from .mixins.model_mixin import ModelMixin
 @synthesize_property('size', contract='int|None')
 @synthesize_property('content_type', contract='string|None')
 class Episode(ModelMixin):
-    def read_headers(self) :
+    def read_headers(self):
+        """
+            perform a HEAD on self.url
+        """
         self.url = base64.urlsafe_b64decode(self.id).decode("utf-8")
-        if self.size == None :
-            r = requests.head(self.url)
-            print(r.headers)
-            self.size = int(r.headers.get('Content-Length', None))
-            self.content_type = r.headers.get('Content-Type')
-    
-    def read(self) :
-        r = requests.get(self.url,stream=True)
-        return r.raw
-    
+        if self.size is None:
+            req = requests.head(self.url)
+            print(req.headers)
+            self.size = int(req.headers.get('Content-Length', None))
+            self.content_type = req.headers.get('Content-Type')
+
+    def read(self):
+        """
+            perform a GET on self.url
+        """
+        req = requests.get(self.url, stream=True)
+        return req.raw
+
     @staticmethod
     def construct_episode_from_podcast_dict(data) :
         """

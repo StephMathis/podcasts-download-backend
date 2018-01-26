@@ -120,15 +120,14 @@ class PodcastResource(Resource):
                 dispatch='dispatch_detail'
             ),
             UrlHelper().resource_url(
+                rest_url='channels/:channel_id/podcasts/:podcast_id',
+                child_resource=ChannelPodcastResource(),
+                dispatch='dispatch_detail'
+            ),
+            UrlHelper().resource_url(
                 rest_url='channels/:channel_id/podcasts',
                 child_resource=ChannelPodcastResource(),
                 dispatch='dispatch_list'
             )
-            # ,
-            # UrlHelper().resource_url(
-            #     rest_url='channels/:channel_id/podcasts/:podcast_id',
-            #     child_resource=ChannelResource(),
-            #     dispatch='dispatch_detail'
-            # )
         ]
 
