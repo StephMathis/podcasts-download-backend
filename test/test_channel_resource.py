@@ -33,6 +33,31 @@ class TestChannelResource(WtTestCase):
         self._reset()
 
     @patch.object(FileChannelStore, '_get_root_path')
+    def test_should_get_podcast(self, mock__get_root_path):
+        mock__get_root_path.return_value = TestChannelResource.VAR_CHANNEL_DIR
+        print("======================= test_should_get_podcast")
+        response = self.api_client.get('/podcast-api/v1/podcasts/aHR0cDovL3JhZGlvZnJhbmNlLXBvZGNhc3QubmV0L3BvZGNhc3QwOS9yc3NfMTgyOTcueG1s')
+        #response = self.api_client.get('/podcast-api/v1/podcasts/aHR0cDovL3JhZGlvZnJhbmNlLXBvZGNhc3QubmV0L3BvZGNhc3QwOS9yc3NfMTU2NDQueG1s')
+        self.assertHttpOK(response)
+
+        data = self.deserialize(response)
+
+        self.assertEqual({
+            'content': {'cover_url': 'http://media.radiofrance-podcast.net/podcast09/logo_1007.jpg',
+                    'description': "Chaque jour un groupe d'enfants nous donne ses "
+                                    'réponses aux grandes questions de la vie '
+                                    'quotidienne.',
+                    'episodes': [],
+                    'link': 'http://www.radiofrance.fr/',
+                    'title': "FB Cotentin Les p'tits Saint-Lois"},
+            'episodes': [],
+            'podcast_id': 'aHR0cDovL3JhZGlvZnJhbmNlLXBvZGNhc3QubmV0L3BvZGNhc3QwOS9yc3NfMTgyOTcueG1s',
+            'podcast_url': 'http://radiofrance-podcast.net/podcast09/rss_18297.xml'
+            }, data)  
+
+
+
+    @patch.object(FileChannelStore, '_get_root_path')
     def test_should_get_empty_channel_list(self, mock__get_root_path):
         mock__get_root_path.return_value = TestChannelResource.VAR_CHANNEL_DIR
 

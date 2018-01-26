@@ -37,7 +37,8 @@ class PodcastResource(Resource):
         to=EpisodeResource,
         attribute=lambda bundle: Podcast(bundle.obj.id).get_episodes(),
         full=True,
-        readonly=True
+        readonly=True,
+        null=True
     )
 
     class Meta :
@@ -47,11 +48,13 @@ class PodcastResource(Resource):
     def obj_get(self, bundle, **kwargs):
         pod_id = kwargs.get('podcast_id')
         # print("=============> PodcastResource.obj_get: kwargs=",kwargs)
-        # print("=============> PodcastResource.obj_get: pod_id=", pod_id)
+        print("=============> PodcastResource.obj_get: pod_id=", pod_id)
         # print("=============> PodcastResource.obj_get: prepend_urls=", self.prepend_urls())
         
         podcast = Podcast(pod_id)
+        print("=============> PodcastResource.obj_get: podcast=", podcast)
         podcast.get_content()
+        print("=============> PodcastResource.obj_get: podcast with content =", podcast)
         return podcast
 
         
